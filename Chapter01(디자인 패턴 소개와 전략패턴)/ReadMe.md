@@ -40,7 +40,7 @@ __[Duck의 행동을 상속할때 단점이 되는 요소]__
 - 달라지는 부분을 찾아서 나머지 코드에 영향을 주지않도록 캡.슐.화 한다
 - 즉, 바뀌는 부분과 그렇지 않은 부분을 분리하자
 #
-<img src="/Users/yoonjuho/Design-Pattern/Chapter01(디자인 패턴 소개와 전략패턴)/imagefile/KakaoTalk_Photo_2022-07-08-02-56-28.jpeg">
+<img src="imagefile/KakaoTalk_Photo_2022-07-08-02-56-28.jpeg">
 
 #
 `fly()`와 `quack()`을 Duck 클래스로부터 분리하려면 2개의 메소드를 모두 <br>Duck 클래스에서 끄집어 내서 각 행동을
@@ -56,7 +56,7 @@ __[Duck의 행동을 상속할때 단점이 되는 요소]__
 - 구현보다는 인터페이스에 맞춰서 프로그래밍 한다.
 - 즉, 실행 시에 쓰이는 객체가 코드에 고정되지 않도록 상위 형식에 맞춰 프로그래밍해서 다형성을 활용해야 한다
 #
-<img src="/Users/yoonjuho/Design-Pattern/Chapter01(디자인 패턴 소개와 전략패턴)/imagefile/KakaoTalk_Photo_2022-07-08-03-06-46.jpeg">
+<img src="imagefile/KakaoTalk_Photo_2022-07-08-03-06-46.jpeg">
 
 - 이런 식으로 디자인하면 다른 형식의 객체에서도 나는 행동과 꽥꽥거리는 행동을 **재사용** 할 수 있다.
 - Duck클래스를 전혀 **건드리지 않고도** 새로운 행동 추가 가능
@@ -69,7 +69,7 @@ __[Duck의 행동을 상속할때 단점이 되는 요소]__
 - 상속보다는 구성을 활용한다
 - 즉, 각각 **나는행동**과 **꽥꽥거리는 행동**을 위임 받는데,<br> 이런식으로 두 클래스를 합치는 것을 **구성**을 이용한다 라고 부른다
 #
-<img src="/Users/yoonjuho/Design-Pattern/Chapter01(디자인 패턴 소개와 전략패턴)/imagefile/KakaoTalk_Photo_2022-07-08-04-12-14.jpeg">
+<img src="imagefile/KakaoTalk_Photo_2022-07-08-04-12-14.jpeg">
 
 -------------------
 #
