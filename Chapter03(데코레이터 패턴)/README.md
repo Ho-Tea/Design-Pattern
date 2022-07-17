@@ -1,55 +1,103 @@
 # 💈디자인 패턴 (#데코레이터 패턴)
 ***
-#
-### ☑️데코레이터 패턴에 대해 알아보자
-# 
-## 📌 신문사 + 구독자 = 옵저버 패턴
-## 📌 한 객체의 상태가 변경되면 그 객체에 의존하는 <br>모든 객체에게 연락이 간다
-#
-#
-#
-## <정의>
-#
-<img src="imagefile/KakaoTalk_Photo_2022-07-09-01-31-16.jpeg">
+  
+
+### ☑️데코레이터 패턴에 대해 알아보자  
+<br/>
+
+## 📌 객체(커피) + 데코레이터(시럽) +데코레이터(휘핑) +.... <br>= 데코레이터 패턴  
+  
+<br/>
+
+## <정의>  
 
 
-#
-- 옵저버 패턴은 신문사와 구독자로 이루어지는 신문 구독 서비스와 유사하다
-- 옵저버 패턴은 일련의 객체 사이에 1: N 관계
-- 보통 주제(subject)인터페이스와 옵저버(observer) 인터페이스를 통해 구현
+<img src="imagefile/KakaoTalk_Photo_2022-07-18-02-49-20.jpeg">
 
-#
+<br/>
 
+
+- 한 **객체**를 여러 개의 데코레이터로 감쌀 수 있습니다
+- 데코레이터의 슈퍼클래스는 자신이 장식하고 있는 **객체**의 슈퍼클래스와 같습니다
 
 --------------------------------------
-#
-#
-## <문제 발생>
-#
--주제(subject) 클래스의 예제
-#
-<img src="imagefile/KakaoTalk_Photo_2022-07-09-01-35-29.png">
 
-#
-- 인터페이스가 아닌 구체적인 구현을 바탕으로 코딩을 하고 있다
-    - `currentConditionsDisplay.update()`메소드를 살펴보면 <br>구체적인 구현을 바탕으로 코딩을 하고 있다는 점을 알 수 있다
-- 새로운 디스플레이 항목이 추가될 때마다 코드를 변경해야 한다
-    - 새로운 디스플레이 항목이 추가되면 밑에다 또 적어야하는 번거로움이 존재
-- 실행 중에 디스플레이 항목을 추가하거나 제거할 수 없다
-    - 런타임 시에 접근할 수 없다
+## <문제 발생>   
 
-*위에 세가지 문제점 모두 유연하지 못한 코딩으로 객체지향의 기본인 <br> **나중에는 어떻게 변할 것인가?** 를 고려하지 않은 상태를 의미한다
--> **추상화**랑 **다형성**을 고려해야겠네..!
-- 바뀌는 부분을 캡슐화하지 않았다
-    - 여기서 **캡.슐.화**란?
-        - 관.련이 있는 변수와 함수를 하나의 클래스로 묶고 <br>외부에서 쉽게 접근하지 못하게 하는 것!
-    - 정보은닉과 바뀌는 부분과 바뀌지 않는 부분을 나누어 더 효과적인 설계가 된다
+-1) `Beverage클래스`를 다른 모든클래스들이 상속받는다 -> 상속의 문제점
+
+<img src="imagefile/KakaoTalk_Photo_2022-07-18-02-55-12.jpeg">
+  
+
+-2) `슈퍼클래스(Beverage)`에 인스턴스 변수와 메소드를 추가해서 생각<br>클래스의 개수가 줄었지만 이 점도 문제가 많다
+
+<img src="imagefile/KakaoTalk_Photo_2022-07-18-02-59-23.jpeg">
+
+-2-1) 📃Code
+``` java
+  public class Beverage{
+      //milkCost, soyCost, mochaCost, whipCost
+      //각각에 해당하는 인스턴스 변수를 선언하고,
+      boolean milk;
+      boolean moka;
+      ...
+      //우유, 두유, 모카, 휘핑크림에 대한 게터와
+      //세터 메서드를 선언한다
+      
+      public double cost(){
+          double condimentCost = 0.0;
+          
+          if(hasMilk()){
+              condimentCost += milkCost;
+          }
+          if(hasSoy()){
+              condimentCost += soyCost;
+          }
+          if(hasMocha()){
+              condimentCost += mochaCost;
+          }
+          if(hasWhip()){
+              condimentCost += whipCost;
+          }
+          return condimentCost;
+      }
+      
+      
+  public class DarkRoast extends Beverage{
+  
+      public DarkRoast(){
+          description = "최고의 다크 로스트 커피";
+      }
+      
+      @Override
+      public double cost(){
+          return 1.99 + super.shot;
+      }
+  }  
+```
+
+- 첨가물 가격의 바뀔 때마다 기존 코드를 수정해야 한다.
+    - 첨가물의 가격이 바뀌면 `Beverage클래스`를 수정해야 한다  
+
+
+- 첨가물의 종류가 많아지면 새로운 메소드를 추가해야하고,<br>슈퍼클래스의 `cost()`메소드 또한 고쳐야한다
+    - 새로운 첨가물의 `get(),set()`메소드를 추가해야하고,<br>`cost()`메소드에서 새로운 첨가물의 정보를 얻어오는 것을 추가해야한다  
+
+
+- 특정 첨가물이 들어가면 안되는 음료가 생길 수 있다
+    - 아이스티의 경우, `Tea서브 클래스`에서도 <br>`hasWhip()`과 같은 메소드가 여전히 상속받는다
+  
+
+*위에 세가지 문제점 모두 무분별한 상속을 통해 발생한 문제들이다
+
 #
 
 __[✏️여기서 잠깐!]__
 
-우리는 **#전략패턴** 을 공부하면서 **객체지향의 기초** 와 **객체지향의 원칙** 을 공부했었다
-#
+우리는 **#옵저버 패턴** 을 공부하면서 **객체지향의 기초** 와 **객체지향의 원칙** 을 공부했었다
+
+<br>
+
 ### <📦객체지향의 기초>
 - 추상화
 - 캡슐화
@@ -57,225 +105,197 @@ __[✏️여기서 잠깐!]__
 - 상속
 
 
-#
+<br/>
 
 
 ### <📦객체지향의 원칙(🍀디자인원칙🍀)>
 - 바뀌는 부분은 캡슐화한다. -> **관리의 용이성**
+  - 달라지는 부분과 달라지지 않는 부분을 분리
 - 상속보다는 구성을 활용한다 -> **재사용성**
+  - ex)`Interface I;` 변수사용 (상속을 사용하는 것이 아닌)
 - 구현보다는 인터페이스에 맞춰서 프로그래밍 한다. -> **확장성**
+  - GOF원칙, 인터페이스를 이용하자!
+- 상호작용하는 객체 사이에서는 가능하면 느슨한 결합을 사용해야한다 -> **재사용성, 유연성**
+  - 인터페이스를 구현하는 객체를 만들면 느슨한 결합을 만들기 수월<br>(확장성이 높고 의존성이 낮다)
 - +) 더 추가될 예정
 
-### ⭕️#옵저버패턴 또한 객체지향의 원칙과 기초에 기반하고 있구나!
-#
-#
-## <원칙으로 추가 코드 살펴보기>
-#
-<img src="imagefile/KakaoTalk_Photo_2022-07-09-01-57-21.png">
-
-#
-- 위에 코드를 살펴보면 캡슐화, 다형성, 추상화를 이용해야겠다고 생각든다.
-#
-#
 
 ---------------
-#
+<br/>
+
+## <상속 살펴보기>
+<br/>
+
+- 상속이 강력하긴 하나, 무조건 유연하거나 관리하기 쉬운 디자인 ❌ 
+  - 서브클래스를 만드는 방식으로 행동을 상속받으면 그 행동은 컴파일할 때 완전히 결정된다<br> `VIPCustomer vip = new VIPCustomer();`
+  - 게다가, 모든 서브클래스에서 똑같은 행동을 상속받아야 한다<br> -> 필요하지 않은 것까지 상속 받는다  
+
+
+- 따라서, **구성**과 **위임**으로 실행중에 행동을 **상속**하는 방법을 쓰자
+  - 실행중에 동적으로 행동 설정 가능(**구성**: `Customer vip;`) <br> `Customer vip = new VIPCustomer();` 
+  - **위임** : 할 일을 다른 객체에게 위임한다
+  - 기존의 코드를 고치는 대신 새로운 코드를 만들어서 기능 추가 가능
+
+
+---------------
+
 ## <패턴의 구조>
-#
-### 🛠Class Diagram
 
-<img src="imagefile/KakaoTalk_Photo_2022-07-09-02-03-32.png">
 
-#
+<img src="imagefile/KakaoTalk_Photo_2022-07-18-03-49-32.jpeg">
+<img src="imagefile/KakaoTalk_Photo_2022-07-18-03-50-19.jpeg">
 
-<img src="imagefile/KakaoTalk_Photo_2022-07-09-02-05-45.jpeg">
+<br/>
 
-#
-- Duck객체 또한 옵저버가 될 수 있다
-#
+정리하자면,
+  - 데코레이터의 슈퍼클래스는 자신이 장식하고 있는 객체의 슈퍼클래스이다
+  - 한 객체를 여러개의 데코레이터로 감쌀 수 있다
+  - **데코레이터는 자신이 감싸고 있는 객체와 같은 슈퍼클래스**를 가지고 있기에<br>원래 객체가 들어갈 자리에 데코레이터 객체를 넣어도 상관없다
+  - 데코레이터는 자신이 장식하고 있는 객체에게 어떤 행동을 위임하는 일 말고도<br>**추가작업**을 수행할 수 있다
+
 
 ---------------------------
 
-#
-## 디자인 원칙🍀🍀🍀🍀
-- 상호작용하는 객체 사이에는 가능하면 느슨한 결합을 사용해야 한다
-    - 즉, 코드의 재사용을 높이고 유연성을 취한다
 
-#
-## <느슨한 결합의 위력>
-#
-- **느슨한 결합** 은 객체들이 상호작용할 수는 있지만, 서로를 잘 모르는 관계를 의미
-    - 즉, 유연성이 올라간다
-        - #옵저버 패턴은 느슨한 결합을 보여주는 훌륭한 예
-#
-### 강한결합 vs 느슨한 결합
-#
-#### -강한결합 예제
-#
-``` java
-public class Remote
-{
-private Television Tv { get; set; }
+## 디자인 원칙🍀🍀🍀🍀🍀
+- 클래스는 확장에는 열려있어야 하지만, 변경에는 닫혀 있어야 한다
+    - 즉, **OCP** -> 코드의 변경(=오버헤드)은 하지 않으면서 시스템을 확장한다 <br>ex) 옵저버 패턴
+    - 모든 부분에서 **OCP**를 준수하기는 어렵다
+      - 가장 바뀔 가능성이 높은 부분을 중점적으로 살펴보고 **OCP**를 적용하자.
 
-    protected Remote()
-    {
-        Tv = new Television();
-    }
 
-    static Remote()
-    {
-        _remoteController = new Remote();
-    }
-    static Remote _remoteController;
+---------------------------
 
-    public static Remote Control
-    {
-        get
-        {
-            return _remoteController;
-        }
-    }
-    public void RunTv()
-    {
-        Tv.Start();
-    }
-}
-```
-#
-- TV는 리모콘이 없으면 동작을 못한다
-    - TV는 remote클래스 안에서 생성이 되고 노출이 안됨
-- TV의 변경이 직접적으로 리모컨에 영향을 준다
-- 이 리모컨은 TV만 제어가 가능하고 다른 장비들은 제어 못한다
-#
-#
-#### -느슨한 결합 예제
-
-``` java
-public interface IRemote
-{
-    void Run();
-}
-
-public class Television : IRemote
-{
-    protected Television()
-    {
-    }
-
-    static Television()
-    {
-        _television = new Television();
-    }
-
-    private static Television _television;
-
-    public static Television Instance
-    {
-        get
-        {
-            return _television;
-        }
-    }
-
-    public void Run()
-    {
-        Console.WriteLine("Television is started!");
-    }
-}
-
-public class Remote
-{
-    IRemote _remote;
-
-    public Remote(IRemote remote)
-    {
-        _remote = remote;
-    }
-
-    public void Run()
-    {
-        _remote.Run();
-    }
-}
-
-class Program
-{
-    static void Main(string[] args)
-    {
-        Remote remote = new Remote(Television.Instance);
-        remote.Run();
-        Console.Read();
-    }
-}
-```
-#
-- 시험 가능성(testablility)을 향상시킨다
-- 인터페이스에 대한 프로그램의 GOF원칙(구현하지 않기)를 준수하는데 도움이 된다
-- 의존성이 적어 코드나 객체, 구성의 변경이 용이하다
-- `IRemote`인터페이스만 준수하면 TV뿐만 아니라 다른장비도 연동 가능 -> 확장성
-#
-#
 ### 🛠Class Diagram
-#
-<img src="imagefile/KakaoTalk_Photo_2022-07-09-02-37-40.jpeg">
 
-- 주제는 옵저버가 특정 인터페이스(Observer 인터페이스)를 구현한다는 사실만 안다.
-    - 옵저버 인터페이스를 구현한 클래스가 무슨 일을 하는지 알 필요가 없다
-- 옵저버는 언제든지 새로 추가 할 수 있다
-- 주제와 옵저버는 서로 독립적으로 재사용 할 수 있다
-    - 주제난 옵저버를 **다른 용도**로 활용할 일이 있다고 해도 손쉽게 재사용 가능.
-    - 둘이 단단하게 결합되어 있지 않기 때문에
-- 주제나 옵저버가 달라져도 서로에게 영향을 미치지 않는다
-    - 주제나 옵저버 인터페이스를 구현한다는 조건만 만족하면 된다
+<img src="imagefile/KakaoTalk_Photo_2022-07-18-03-58-08.jpeg">
+<img src="imagefile/KakaoTalk_Photo_2022-07-18-03-58-39.jpeg">
 
-#
--> 지금의 방식은 **push방식**으로 주제가 옵저버에게 데이터를 보내주는것이지만
-이벤트가 발생할 때 마다 옵저버가 **pull방식**으로 데이터를 가져오는 것도 가능하다
-(약간의 코드 수정 필요)
+- `CondimentDecorator클래스`에서 `Beverage클래스`를 확장하고 있다
+    - 상속이지만, **행동**을 상속받는게 아닌 **형식**을 상속받는다<br> 즉, 데코레이터를 만들 때 새로운 행동을 추가한다 (슈퍼클래스로부터 행동을 상속받는게 아닌)
+      - **형식**: 데코레이터 객체가 일반 객체와 같은 인터페이스를 가져야 하는 이유
+      - **행동**: 기본구성요소(`Espresso클래스`)와는 다른 데코레이터 등을 <br>인스턴스 변수에 저장하는 식으로 **연결**
+- 객체구성(인스턴스 변수로 다른 객체를 저장하는 방식)을 이요하고 있다<br>`Customer vip = new VIPCustomer();`
+    - 유연성을 잃지 않는다
+    - 컴파일시 정적으로 결정되지 않는다
+      - -> 실행중에 마음대로 조합해서 사용 가능
+- 인터페이스나 추상클래스로 구성  
 
-#
-### pull 방식
-<img src="imagefile/KakaoTalk_Photo_2022-07-09-03-30-20.jpeg">
 
-#
+**<밑에 나오는 코드를 참고하여 이해하자>**
+
+### 📃Code
+Beverage class
+``` java
+public abstract class Beverage {
+    String description = "제목 없음";
+
+    public String getDescription(){
+        return description;
+    }
+    public abstract double cost();
+}
+```  
+
+CondimentDecorator class
+``` java
+public abstract class CondimentDecorator extends Beverage{
+    Beverage beverage;
+    public abstract String getDescription();
+}
+```  
+Espresso class
+``` java
+public class Espresso extends Beverage{
+  public Espresso(){
+    description = "에소프레소";  //Beverage에서 인스턴스변수를 상속받는다
+   }
+  @Override
+  public double cost() {
+    return 1.99;
+  }
+}
+```   
+
+Mocha class
+``` java
+public class Mocha extends CondimentDecorator{
+
+    public Mocha(Beverage beverage){
+        this.beverage = beverage;
+    }
+    @Override
+    public double cost() {
+        return beverage.cost() + .20;
+    }
+
+    @Override
+    public String getDescription() {
+        return beverage.getDescription() + ", 모카";
+    }
+}
+``` 
+
+
+
+------------------------
+
+## 🔎 Q & A
+
+Q.위 코드를 그대로 쓰면 **구상 구성 요소**로 특별할인 같은 작업을 처리할 때 문제가 발생하지 않는가??<br> `HouseBlend`를 데코레이터로 감싸고 나면 그 커피가 하우스 블렌드인지 에스프레소인지 알 수 없지 않나?
+
+<br/>
+
+A. **구상 구성 요소**로 어떤 작업을 처리하는 코드에는 맞지 않다<br> 반대로, **추상 구성 요소**로 돌아가는 코드에는 데코레이터 패턴을 적용해야만 제대로 된 결과를 얻을 수 있다  
+
+    Abstract Class Object (추상 구성요소)
+    Abstract Class Decorator extends Object (추상 데코레이터)
+    Class RealObject extends Object (구상 구성요소)
+    Class RealDecorator extends Decorator (구상 데코레이터)
+
+<br/>
+
+Q. 휘핑을 마지막에 추가해야하는데 두유를 마지막에 추가하는 문제가 생길 수 있지 않냐
+
+A. 그럴 수 있다 <br>하지만, 팩토리나 빌더같은 다른패턴으로 데코레이터를 만들고 사용하므로 문제X
+
+
 
 
 -------------------
-#
-### ❗느슨한 결합을 가진 구조인 옵저버 패턴에 대해 알아 보았다❗️
-#
-#
-## 🏴#옵저버 패턴
-- 1 : N 관계이며, 한 객체의 **상태**가 바뀌면 그 객체에 (느슨하게) 의존하는 다른 객체에게 <br> 연락이 가고
-  자동으로 내용이 갱신되는 방식이다
-- 옵저버 패턴은 MVC패턴에서 다시 배워보자
-#
-#
 
-------------------------
-#
-## 🔎 Q & A
+## 🏴#데코레이터 패턴
+- 데코레이터는 감싸고 있는 객체에 행동을 추가하는 용도로 만들어 진다
+  - 만약 여러 단계의 데코레이터를 파고 들어가서 어떤 작업을 해야한다면<br>원래 데코레이터 패턴이 만들어진 의도에 어긋난다
+- OCP에 충실하면서(기존코드 수정X) 유연한 디자인을 만들 수 있다.
+- 구성과 위임으로 실행중에 새로운 행동을 추가할 수 있다
+- 행동을 확장한다
+- 구성 요소의 클라이언트(`Espresso class`를 이용하는 클라이언트)는 데코레이터의 존재를 알 수 없다
+  - 클라이언트가 구성 요소의 구체적인 형식에 의존하는 경우는 예외
 
-<img src="imagefile/KakaoTalk_Photo_2022-07-09-03-25-25.jpeg">
+<br/>
 
-Q.`update()`에서 `display()`를 호출하는 방법이 정말 최선인가??
-#
-A. **최선의 방법은 아니다**<br>데이터를 화면에 표시하는 더 좋은 방법은 **MVC패턴**이다
-#
+
+- __🔴문제점__
+  1) 자잘한 클래스가 많이 생긴다
+  2) 특정 형식에 의존하는 클라이언트 코드에 <br>데코레이터를 그냥 적용해버리면 문제가 생긴다
+  3) 구성요소를 초기화 하는데 필요한 코드가 복잡해진다 <br> -> 이는, 팩토리와 빌더 패턴의 도움을 받아 해결
+<br/>
 
 -----------------------
-#
-## 💥마치며..
-__⭕️ 여러가지 객체지향의 기초를 접했는데 확장성, 재사용성 +(유연성), 캡슐화 등이 존재하였다__
-#
+
+## 💥마치며..  
+
+
 - 확장성: 퍼져나가는것(추상화랑 다형성이랑 유사)
 - 재사용성: 다른 것을 만들때도 코드가 또 쓰일 수 있는것
     - -> 느슨한 결합일 때 **good!**
-- 캡슐화: 특정한 기준을 가지고 서로 분리해서 생각하는것
-#
+- 캡슐화: 특정한 기준을 가지고 서로 분리해서 생각하는것  
+
+
+
 __⭕상황에 맞게 변경할 수 있는 **유연한** 디자인을 만드는게 중요!!!__
-#
-#
+<br/>
 ### <📦객체지향의 기초>
 - 추상화
 - 캡슐화
@@ -294,10 +314,12 @@ __⭕상황에 맞게 변경할 수 있는 **유연한** 디자인을 만드는�
 - 구현보다는 인터페이스에 맞춰서 프로그래밍 한다. -> **확장성**
     - GOF원칙, 인터페이스를 이용하자!
 - 상호작용하는 객체 사이에서는 가능하면 느슨한 결합을 사용해야한다 -> **재사용성, 유연성**
-    - 인터페이스를 구현하는 객체를 만들면 느슨한 결합을 만들기 수월
+    - 인터페이스를 구현하는 객체를 만들면 느슨한 결합을 만들기 수월<br>(확장성이 높고 의존성이 낮다)
+- 클래스는 확장에는 열려 있어야 하지만 변경에는 닫혀 있어야 한다
+  - OCP : 기존코드 수정없이 행동을 확장한다 (행동을 상속받는 것이 아닌)
 - +) 더 추가될 예정
 
 #
 #
-## 🔑 -> (#옵저버 패턴도 마찬가지로)모든 패턴들이 <br>객체지향의 기본개념과 원칙에 의존한다
+## 🔑 -> (#데코레이터 패턴도 마찬가지로)모든 패턴들이 <br>객체지향의 기본개념과 원칙에 의존한다
 
