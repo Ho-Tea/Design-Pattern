@@ -25,7 +25,11 @@
 
 ## <멀티 쓰레딩 문제>   
 
+
 <img src="imagefile/2.png">
+
+
+<img src="imagefile/6.jpeg">
 
 <br/>
 
