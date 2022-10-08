@@ -5,50 +5,49 @@
 ### ☑️싱글턴 패턴에 대해 알아보자  
 <br/>
 
-## 📌 특정 클래스에 객체 인스턴스가 하나만 만들어지도록 해주는 패턴
+## 📌 일련의 행동을 특정 리시버와 연결함으로써 요청을 캡슐화 한다
+## 📌 어떤 작업을 요청하는 쪽과 그 작업을 처리하는 쪽을 분리할 수 있다
+
   
 <br/>
 
 ## <정의> 
-<img src="imagefile/1.png">
+<img src="imagefile/1.jpeg">
 
 
-- **어디서든 그 인스턴스에 접근할 수 있도록 전역 접근 지점을 제공한다**
-- 하나의 인스턴스로 이루어 진다
-
+- 행동과 리시버를 한 객체에 넣고, `execute()`라는 메소드 하나만 외부에 공개하는 방법을 써야한다
+  - 이 메서드 호출에 따라 리시버에서 일련의 작업을 처리합니다
+- 밖에서 볼 때는 어떤 객체가 리시버 역할을 하는지, 그 리시버가 어떤 일을 하는지 알 수 없다.<br> 그냥 `execute()`메서드를 호출하면 해당요청이 처리된다는 사실만 알 수 있다
+  - 캡슐화의 장점
 <br/>
+
+<img src="imagefile/3.jpeg">
 
 --------------
 
 <br/>
 
 
-## <멀티 쓰레딩 문제>   
+## <커맨드 패턴 요소>   
 
-<img src="imagefile/2.png">
+<img src="imagefile/2.jpeg">
 
 <br/>
 
+```java
+public static void main(String[] args) {
+        SimpleRemoteControl remote = new SimpleRemoteControl(); //인보커 객체 생성
+        Light light = new Light();  //리시버 객체 생성
+        GarageDoor garageDoor = new GarageDoor(); //리시버 객체 생성
+        LightOnCommand lightOn = new LightOnCommand(light); //커맨드 객체 생성
+        GarageDoorOpenCommand garageDoorOn = new GarageDoorOpenCommand(garageDoor); //커맨드 객체 생성
 
-### 해결방안 (enum을 사용하지 않고 싱글턴 패턴을 구현하는 방법)
-  - `getInstance()`메소드 동기화 하기
-    - <img src="imagefile/4.png">
-  - 인스턴스가 필요할 때는 생성하지 말고 처음부터 만든다
-    ```java
-    public class Singleton{
-      private static Singleton uniqueInstance = new Singleton();
-
-      private Singleton() {}
-
-      public static Singleton getInstance() {
-        return uniqueInstance;
-      }
+        remote.setCommand(lightOn); //인보커가 커맨드 호출
+        remote.buttonWasPressed();  //커맨드 내부의 execute 호출
+        remote.setCommand(garageDoorOn);  //인보커가 커맨드 호출
+        remote.buttonWasPressed();  //커맨드 내부의 execute 호출
     }
-    ```
-  - DCL을 써서 `getInstance()`에서 동기화 되는 부분을 줄입니다
-    - DCL : Double - Check - Locking
-    - <img src="imagefile/3.png">
-
+```
 
 
 
@@ -58,24 +57,60 @@
 --------------------------------------
 
 
-## <싱글턴 패턴의 문제점>
-  - 리플렉션,직렬화,역직렬화 문제가 될 수 있다
-  - 느슨한 결합을 위배한다
-  - 한클래스가 1가지일만 해야하는 객체지향의 관점에서 벗어난다
-  - 클래스로더와 관련된 문제 발생
+### 🛠Class Diagram
+  
+ <br/> 
+
+<img src="imagefile/4.jpeg">
 
 <br/>
 
-## <이러한 싱글턴 패턴의 문제점들에 대한 해결방안>
-  - <img src="imagefile/5.png">
+
+
+--------------
+
+<br/>
+
+
+## <커맨드 패턴 구체화 하기>   
+
+<img src="imagefile/5.jpeg">
 
 <br/>
 
 -----------------------
 
+## <람다를 이용한 코드>
+
+<img src="imagefile/6.jpeg">
+
+- 구상 커맨드 객체를 람다 표현식으로 바꾸면 구상 커맨드 클래스(`LightOnCommand`, `LightOffCommand` 등) 모두 지워도 된다
+- 리모컨 어플리케이션에 들어있는 클래스를 22개에서 9개로 줄일 수 있다
+
+<br/>
+
+**이 방법은 Command 인터페이스에 추상 메소드가 하나 뿐일때만 사용 할 수 있다**
+
+<br/>
+
+----------------
+
+## <커맨드패턴 구분하기>
+
+<img src="imagefile/7.jpeg">
+
+
+
+
+<br/>
+
+----------------
+
 ## 💥마치며..  
 
-- 싱글턴 패턴 : 하나의 인스턴스
+- 커맨드 패턴 : 메서드를 커맨드 객체로 캡슐화 할 수 있는 패턴
+  - **요청하는 객체와 요청을 수행하는 객체를 분리하고 싶다면 사용**
+  - **이러한 요청을 큐에 저장하거나 로그로 기록하거나 작업 취소기능을 사용 할 수 있다**
 
 <br/>
 
