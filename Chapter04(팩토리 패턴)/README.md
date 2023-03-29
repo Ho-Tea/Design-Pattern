@@ -1,6 +1,23 @@
-# 💈디자인 패턴 (#팩토리 패턴)
+# 💈디자인 패턴 (#팩토리 패턴) -> 생산만 담당하는 공장
+- 팩토리 메서드 패턴 -> 피자가게와 피자 제작 과정 전체를 하나로 묶어주는 프레임워크<br> 실제 추상 팩토리 메서드(`createPizza`)를 구현하고 제품을 만들어내는 일을 서브클래스(`NYPizzaStore`)가 담당
+- 추상 팩토리 패턴 -> 제품군을 생성하기 위한 인터페이스(`PizzaIngredientFactory`)를 생성 그 인터페이스를 구성하여 사용할수 있게끔 하는것
+  ``` java
+  public interface PizzaIngredientFactory {
 
-  
+	public Dough createDough();
+
+	public Sauce createSauce();
+
+	public Cheese createCheese();
+
+	public Veggies[] createVeggies();
+
+	public Pepperoni createPepperoni();
+
+	public Clams createClams();
+
+  } 
+  ```
 
 ### ☑️팩토리(메서드,추상) 패턴에 대해 알아보자  
 <br/>
