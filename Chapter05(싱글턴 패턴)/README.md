@@ -1,5 +1,5 @@
-# 💈디자인 패턴 (#싱글턴 패턴)
-
+# 💈디자인 패턴 (#싱글턴 패턴) - private static Singleton unique = new Singleton();
+- 하나의 인스턴스(Enum 타입은 기본적으로 직렬화 가능 인스턴스가 JVM내에 하나만 존재)
   
 
 ### ☑️싱글턴 패턴에 대해 알아보자  
