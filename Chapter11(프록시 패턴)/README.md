@@ -23,6 +23,98 @@
 - `RealSubject`는 진짜 작업을 대부분 처리하는 객체이다 <br> `Proxy`는 그 객체로의 접근을 제어하는 객체다
 - 원격프록시 vs 가상프록시(`spring`)
 
+-------------
+
+## 동적 프록시 만들기
+
+
+- 런타임 시점에 프록시 클래스를 만들어주는 방식이 동적 프록시(**밑 두가지 단점을 해결**)
+  - 1. 프록시를 사용하기 위해서는 대상 클래스 수만큼의 프록시클래스를 하나하나 만들어줘야한다
+  - 2.  그 안에 들어가는 반복되는 코드때문에 코드중복이라는 단점
+
+- `newProxyInstance()` 메서드를 사용하면, 런타임 시점에 프록시 클래스를 만들어 주기 때문에<br> 대상 클래스 수만큼 프록시 클래스를 만들어야하는 첫번째 단점을 해결해 준다
+- `InvocationHandler`는 `invoke()` 메서드만 가지고 있는 인터페이스
+- `invoke()` 메서드는 런타임 시점에 생긴 동적 프록시의 메서드가 호출되었을때, 실행되는 메서드이고,<br>  어떤 메서드가 실행되었는지 메서드 정보와 메서드에 전달된 인자까지 `invoke()`메서드의 인자로 들어오게 된다
+- 또한, `invoke()` 메서드에 프록시만 사용할 당시, 프록시 클래스마다 들어간 반복된 코드를 한번만 작성함으로써 두번째 단점을 해결해 줍니다.
+<img src= "image/4.png">
+
+``` java
+
+import java.lang.reflect.*; // InvocationHandler는 java.lang.reflect 패키지에 들어있으므로 import 선언문이 필요
+public class OwnerInvocationHandler implements InvocationHandler {
+  Person person;
+
+  public OwnerInvocationHandler(Person person){
+    this.person = person;
+  }
+
+  //프록시의 메서드가 호출될때마다 호출되는 invoke() 메서드
+  public Object invoke(Object proxy, Method method, Object[] args) throws IllegalAccessException{
+    try{
+      if(method.getName().startsWith("get")) {  // get메서드라면 주제의 메서드를 호출한다
+        return method.invoke(person, args);
+      } else if (method.getName().equals("setGeekRating")){
+        throw new IllegalAccessException();
+      } else if (method.getName().startsWith("set")){ // 나머지 set메서드를 모두 허용해 준다
+        return method.invoke(person, args);
+      }
+    } catch (InvocationTargetException e) {
+      e.printStackTrace();
+    }
+    return null;  //다른 메서드가 호출되면 null을 리턴
+  }
+}
+
+```
+``` java
+public class MatchMakingTestDrive {
+  ...
+
+  public static void main(String[] args){
+    MatchMakingTestDrive test = new MatchMakingTestDrive();
+    test.drive();
+  }
+
+
+  public MatchMakingTestDrive(){
+    initializeDatabase();
+  }
+
+  public void dirve(){
+    Person joe = getPersonFromDatabase("김자바"); //인물 정보를 디비에서 꺼내온다(진짜 객체)
+    Person ownerProxy = getOwnerProxy(kim); // 본인용 프록시를 등록한다
+    System.out.println("이름 :" + ownerProxy.getName());
+    ownerProxy.setInterests("볼링, 바둑");
+    System.out.println("본인 프록시에 관심 사항을 등록한다");
+    try{
+      ownerProxy.setGeekRating(10);
+    }catch(Exception e) {
+      System.out.println("본인 프록시에는 괴짜 지수를 매길 수 없습니다");
+    }
+  }
+}
+
+
+// Person객체를 인자로 받고 본인용 프록시를 만드는 메서드
+// Person객체(진짜 주제)를 인자로 받아오고 프록시를 리턴한다
+Person getOwnerProxy(Person person) {
+  return (Person) Proxy.newProxyInstance(
+          person.getClass().getClassLoader(),
+          person.getClass().getInerfaces(),
+          new OwnerInvocationHandler(person));
+}
+
+
+```
+
+
+
+
+
+
+
+
+
 --------------
 ## RMI
 - `RMI`는 우리 대신 클라이언트와 서비스 보조 객체를 만들어 준다.
