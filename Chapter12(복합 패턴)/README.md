@@ -195,6 +195,238 @@ public class BeatModel implements BeatModelInterface, Runnable {
 
 ----------------
 
+## 기타 패턴
+
+-  ### 브리지 패턴
+	- 구현과 더불어 **추상화** 부분까지 변경해야 한다면 브리지 패턴을 써야한다
+	- <img src = "image/bridge.png">
+
+
+- ### 빌더 패턴
+	- 제품을 여러단계로 나눠서 만들도록 제품 생산단계를 캡슐화하고 싶다면 빌더 패턴을 사용
+	- ``` java
+		public class Computer {
+    	//required parameters
+    	private String HDD;
+    	private String RAM;
+    	//optional parameters
+    	private boolean isGraphicsCardEnabled;
+    	private boolean isBluetoothEnabled;
+			public String getHDD() {
+        return HDD;
+  	  }
+			public String getRAM() {
+        return RAM;
+    	}
+
+    	public boolean isGraphicsCardEnabled() {
+        return isGraphicsCardEnabled;
+    	}
+
+    	public boolean isBluetoothEnabled() {
+        return isBluetoothEnabled;
+    	}
+
+	    private Computer(ComputerBuilder builder) {
+        this.HDD=builder.HDD;
+        this.RAM=builder.RAM;
+        this.isGraphicsCardEnabled=builder.isGraphicsCardEnabled;
+        this.isBluetoothEnabled=builder.isBluetoothEnabled;
+  	  }
+
+    	//Builder Class
+	    public static class ComputerBuilder{
+
+        // required parameters
+  	      private String HDD;
+    	    private String RAM;
+
+  	      // optional parameters
+	        private boolean isGraphicsCardEnabled;
+    	    private boolean isBluetoothEnabled;
+		
+      	  public ComputerBuilder(String hdd, String ram){
+        	    this.HDD=hdd;
+          	  this.RAM=ram;
+        	}
+
+        	public ComputerBuilder setGraphicsCardEnabled(boolean isGraphicsCardEnabled) {
+            this.isGraphicsCardEnabled = isGraphicsCardEnabled;
+            return this;
+	        }
+
+	        public ComputerBuilder setBluetoothEnabled(boolean isBluetoothEnabled) {
+  	          this.isBluetoothEnabled = isBluetoothEnabled;
+    	        return this;
+      	  }
+		
+        	public Computer build(){
+          	  return new Computer(this);
+        	}
+
+    			}
+
+				}
+		```
+		``` java
+		public class TestBuilderPattern {
+    	public static void main(String[] args) {
+      	  Computer comp = new Computer.ComputerBuilder("500 GB", "2 GB")
+                .setBluetoothEnabled(true)
+                .setGraphicsCardEnabled(true)
+                .build();
+    		}
+		}
+		```
+
+
+- ### 책임연쇄 패턴
+	- 주어진 요청을 검토하는 객체 사슬을 생성
+	- 그 사슬에 속해있는 각 객체는 자기가 받은 요청을 검사해서 직접 처리하거나<br> 사슬에 들어있는 다른 객체에게 넘긴다
+
+
+- ### 플라이웨이트 패턴
+	- 어떤 클래스의 인스턴스 하나로 여러개의 **가상인스턴스**를 제공하고 싶다면 플라이웨이트 파턴을 사용
+	- 인스턴스를 가능한 대로 공유시켜 쓸데없이 `new`연산자를 통한 메모리 낭비를 줄이는 방식
+	- 예시 : **로직에 의해 같은 색상의 원은 1개만 생성되어 공유된다**
+
+
+- ### 인터프리터 패턴
+	- 문법과 구문을 번겨하는 인터프리터 클래스를 기반으로 간단한 언어를 정의
+
+
+- ### 중재자 패턴
+	- 중재자를 추가하기 전에는 모든 객체가 다른 객체와 서로 알고 있어야 했다
+	- 모든시스템을 제어하는 로직이 들어있다
+
+
+- ### 메멘토 패턴
+	- 시스템에서 핵심적인 기능을 담당하는 객체의 상태 저장
+	- 핵심적인 객체의 캡슐화 유지
+	- <img src ="image/memento.png">
+
+
+- ### 프로토타입 패턴
+	- 어떤 클래스의 인스턴스를 만들 때 자원과 시간이 많이 들거나 복잡하다면 **프로토타입** 패턴을 써야 한다
+	- `clone()`메서드를 사용하여 1회의 DB접근을 통해 가져온 데이터를 다른 객체에 <br> 복사하여(`new`) 사용하면 비용적인 부분에서 절감할 수 있을 것이다.
+
+
+- ### 비지터 패턴
+	- 다양한 객체에 새로운 기능을 추가해야 하는데 캡슐화가 별로 중요하지 않다면 비지터 패턴을 사용
+	- ``` java
+		public interface Element {
+    	int accept(Visitor visitor);
+		}
+		public class BagElement implements Element {
+    	private final int price;
+    	private final String name;
+
+    	public BagElement(int price, String name) {
+        this.name = name;
+        this.price = price;
+    	}
+
+    	public int getPrice() {
+      	  return this.price;
+    	}
+
+    	public String getName() {
+        	return this.name;
+    	}
+
+    	@Override
+    	public int accept(Visitor visitor) {
+      	  return visitor.visit(this);
+    	}
+		}
+
+		public class ShoesElement implements Element {
+    	private final int price;
+    	private final String name;
+    	private final int size;
+
+    	public ShoesElement(int price, String name, int size) {
+      	  this.price = price;
+	        this.name = name;
+  	      this.size = size;
+    	}
+
+    	public int getPrice() {
+      	  return this.price;
+    	}
+
+    	public String getName() {
+      	  return this.name;
+    	}
+
+    	public int getSize() {
+      	  return this.size;
+    	}
+
+    	@Override
+    	public int accept(Visitor visitor) {
+      	  return visitor.visit(this);
+    	}
+		}
+
+		public interface Visitor {
+    	int visit(BagElement bagElement);
+    	int visit(ShoesElement shoesElement);
+		}
+
+		public class CartVisitor implements Visitor {
+    	@Override
+    	public int visit(BagElement bagElement) {
+      	  System.out.println("가방 이름: "+ bagElement.getName() + "가격: "+ bagElement.getPrice());
+	        return bagElement.getPrice();
+  	  }
+
+    	@Override
+    	public int visit(ShoesElement shoesElement) {
+      	  int price = shoesElement.getPrice();
+
+        	if (shoesElement.getSize() > 270) {
+          	  price += 2000;
+        	} else if (shoesElement.getSize() < 230) {
+          	  price -= 5000;
+        	}
+
+        	System.out.println("신발 이름: "+ shoesElement.getName() + "사이즈: "+ shoesElement.getSize() + "가격: "+ price);
+        	return price;
+    	}
+		}
+
+		Element[] elements = new Element[]{
+    	    new BagElement(40000, "토트백"),
+        	new BagElement(10000, "백팩"),
+        	new ShoesElement(50000, "나이키", 210),
+        	new ShoesElement(100000, "아디다스", 290),
+        	new ShoesElement(156000, "리복", 255)
+		};
+
+		Visitor visitor = new CartVisitor();
+		int totalPrice = 0;
+		for (Element element: elements) {
+    	totalPrice += element.accept(visitor);
+		}
+		// 가방 이름: 토트백가격: 40000
+		// 가방 이름: 백팩가격: 10000
+		// 신발 이름: 나이키사이즈: 210가격: 45000
+		// 신발 이름: 아디다스사이즈: 290가격: 102000
+		// 신발 이름: 리복사이즈: 255가격: 156000
+
+		System.out.println("총 금액: "+ totalPrice);
+		// 총 금액: 353000
+		```
+
+
+
+
+
+
+
+-----------------
+
 <br/>
 
 __⭕상황에 맞게 변경할 수 있는 **유연한** 디자인을 만드는게 중요!!!__
